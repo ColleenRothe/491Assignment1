@@ -13,6 +13,8 @@ public class Discount_5pack_test {
 	private void setupDB() {
 		Persistence.wipedb() ;
 	}
+	
+	
 
 	//NEED TO TEST: APPLICABLE && CALCDISCOUNT
 	
@@ -20,13 +22,21 @@ public class Discount_5pack_test {
 		//return true if discount token applicable on given customer
 		//only applicable when customer participates in at least 5 services, >100 euros
 	
-	//return a standard applicable
+	//CALCDISCOUNT:
+			//returns discount value in eurocent
+			//token gives 10 euro discount
+	
 	
 	@Test
-	//test an average working case
+	//test an average working case to check if applicable
+	//test average case to calculate the correct discount
+
 	public void test1(){
 		setupDB() ;
 		ApplicationLogic SUT = new ApplicationLogic() ;
+		
+		//Error? add Service method in ApplicationLogic adds services with 
+			//price in eurocent according to docs, but this is working like these are in euros
 		
 		int duffyID = SUT.addCustomer("Duffy Duck", "") ;
 		int flowerServiceID = SUT.addService("Flowers online shop", 100) ;
@@ -44,7 +54,13 @@ public class Discount_5pack_test {
 		Customer C = SUT.findCustomer(duffyID);
 		Discount_5pack D = new Discount_5pack();
 		
+		//should be applicable and receive the discount of 10
+			//because involved in 5 services, each >=100
 		assertTrue(D.applicable(C) == true);
+		//ERROR?? CALCDISCOUNT says it returns discount value in eurocent,
+			//then it shouldn't be 10 (because that is 10 euros, which is 1,000 euro cents)
+		assertTrue(D.calcDiscount(C)==10);
+
 	}
 	
 	@Test
@@ -68,6 +84,8 @@ public class Discount_5pack_test {
 		Discount_5pack D = new Discount_5pack();
 		//should not be applicable because only participating in 4 services
 		assertTrue(D.applicable(C) == false);
+		//ERROR? Should rewrite method so it doesn't always return 10. Should be 0
+		assertTrue(D.calcDiscount(C) == 10);
 		
 	}
 	
@@ -94,11 +112,12 @@ public class Discount_5pack_test {
 		Discount_5pack D = new Discount_5pack();
 		//should not be applicable because one of the services is <100
 		assertTrue(D.applicable(C) == false);
+		//ERROR? Should rewrite method so it doesn't always return 10. Should be 0
+		assertTrue(D.calcDiscount(C) == 10);
 		
 	}
 	
-	//CALCDISCOUNT:
-		//returns discount value in eurocent
-		//token gives 10 euro discount
+	
+	
 
 }
