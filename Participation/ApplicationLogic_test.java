@@ -94,20 +94,33 @@ public class ApplicationLogic_test {
 			
 	}
 	
-	//test that if you remove last service, there should be no services
+	
+	
+	
+	//Test that it does not remove customer participations in different services
+		//if they are also participating in the removed service
 	@Test
 	public void test4(){
 		setupDB() ;
 		ApplicationLogic SUT = new ApplicationLogic() ;
+		int duffyID = SUT.addCustomer("Duffy Duck", "") ;
 		int flowerServiceID = SUT.addService("Flowers online shop", 100) ;
+		int pizzaServiceID = SUT.addService("Pizza delivery", 150) ;
+
+		SUT.addParticipation(duffyID, flowerServiceID) ;
+		SUT.addParticipation(duffyID, pizzaServiceID) ;
+
 		SUT.removeService(flowerServiceID);
+		//SUT.removeService(4);
 		
-		assertTrue(SUT.getServices().size() == 0);
+		Customer C = SUT.findCustomer(duffyID) ;
 		
+		//even though the service "flowers online shop" was removed, 
+		//customers participating in it should still exist and so should their participations
+		assertTrue(C.getParticipations().iterator().next().getService().name.equals("Pizza delivery"));
 	}
 	
-	//Test that it does not remove customer participations in different services
-		//if they are also participating in the removed service
+	//test that removing a service w/o the correct id will not crash?
 	@Test
 	public void test5(){
 		setupDB() ;
@@ -115,27 +128,26 @@ public class ApplicationLogic_test {
 		int duffyID = SUT.addCustomer("Duffy Duck", "") ;
 		int flowerServiceID = SUT.addService("Flowers online shop", 100) ;
 		int pizzaServiceID = SUT.addService("Pizza delivery", 150) ;
-		int chocolateServiceID = SUT.addService("Chocolate Shop", 150) ;
 
-		
-		
 		SUT.addParticipation(duffyID, flowerServiceID) ;
 		SUT.addParticipation(duffyID, pizzaServiceID) ;
-
-		
-		SUT.removeService(flowerServiceID);
 		SUT.removeService(4);
 		
-		Customer C = SUT.findCustomer(duffyID) ;
 		
+		assertTrue(SUT.getServices().size()==2);
 		
-		//for the last one...changed needs to be false!
-
+	}
+	
+	//successfully remove a service that has no participations
+	@Test
+	public void test6(){
+		setupDB() ;
+		ApplicationLogic SUT = new ApplicationLogic() ;
+		SUT.addCustomer("JOJO", "");
+		int donutID = SUT.addService("Granny's Donuts", 50);
+		SUT.removeService(donutID);
 		
-		System.out.println(C.getParticipations().iterator().next().getService().name);
-
-		
-		assertTrue(C.getParticipations().iterator().next().getService().name.equals("Pizza delivery"));
+		assertTrue(SUT.getServices().size() == 0);
 	}
 	
 	
